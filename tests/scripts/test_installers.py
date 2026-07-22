@@ -89,10 +89,10 @@ if [ "${{1:-}}" = "tool" ] && [ "${{2:-}}" = "install" ]; then
     mkdir -p "$FAKE_TOOL_BIN"
     cp "$FAKE_FIXTURES/fcc-command.sh" "$FAKE_TOOL_BIN/fcc-server"
     cp "$FAKE_FIXTURES/fcc-command.sh" "$FAKE_TOOL_BIN/fcc-desktop"
-    cp "$FAKE_FIXTURES/fcc-command.sh" "$FAKE_TOOL_BIN/fcc-claude"
-    # Codex/Pi removed
+    # Under fcc-missing, omit fcc-claude so install.sh fails its post-install
+    # verification ("did not create ...") before running `fcc-server --version`.
     if [ "$FAIL_STEP" != "fcc-missing" ]; then
-        # Codex removed
+        cp "$FAKE_FIXTURES/fcc-command.sh" "$FAKE_TOOL_BIN/fcc-claude"
     fi
     chmod +x "$FAKE_TOOL_BIN"/fcc-*
     exit 0
