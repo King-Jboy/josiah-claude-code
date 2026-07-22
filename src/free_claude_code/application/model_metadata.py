@@ -9,6 +9,7 @@ class ProviderModelInfo:
 
     model_id: str
     supports_thinking: bool | None = None
+    supports_vision: bool | None = None
 
 
 @dataclass(frozen=True, slots=True)

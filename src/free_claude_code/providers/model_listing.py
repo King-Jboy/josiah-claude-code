@@ -6,6 +6,7 @@ from typing import Any
 from free_claude_code.application.model_metadata import (
     ProviderModelInfo as _ProviderModelInfo,
 )
+from free_claude_code.application.vision_guard import modality_supports_vision
 
 
 class ModelListResponseError(ValueError):
@@ -17,11 +18,18 @@ class ModelListResponseError(ValueError):
 
 
 def model_infos_from_ids(
-    model_ids: Iterable[str], *, supports_thinking: bool | None = None
+    model_ids: Iterable[str],
+    *,
+    supports_thinking: bool | None = None,
+    supports_vision: bool | None = None,
 ) -> frozenset[_ProviderModelInfo]:
-    """Build unknown-capability model metadata from plain provider model ids."""
+    """Build model metadata from plain provider model ids."""
     return frozenset(
-        _ProviderModelInfo(model_id=model_id, supports_thinking=supports_thinking)
+        _ProviderModelInfo(
+            model_id=model_id,
+            supports_thinking=supports_thinking,
+            supports_vision=supports_vision,
+        )
         for model_id in model_ids
         if model_id.strip()
     )
@@ -44,13 +52,16 @@ def extract_openai_model_infos(
 
     if not model_ids:
         raise _malformed(provider_name, "response did not include any model ids")
+
+    # Generic OpenAI-compatible model lists do not advertise vision support, so
+    # leave it unknown here; providers apply a name heuristic at request time.
     return model_infos_from_ids(model_ids)
 
 
 def extract_openrouter_tool_model_infos(
     payload: Any, *, provider_name: str
 ) -> frozenset[_ProviderModelInfo]:
-    """Extract OpenRouter tool-capable model ids with thinking capability metadata."""
+    """Extract OpenRouter tool-capable model ids with capability metadata."""
     data = _field(payload, "data")
     if not _is_sequence(data):
         raise _malformed(provider_name, "expected top-level data array")
@@ -69,10 +80,16 @@ def extract_openrouter_tool_model_infos(
         }
         if supported_parameter_names.isdisjoint({"tools", "tool_choice"}):
             continue
+        # OpenRouter advertises input/output modality (e.g. "text+image->text"),
+        # which authoritatively tells us whether the model accepts images.
+        supports_vision = modality_supports_vision(
+            _field(_field(item, "architecture"), "modality")
+        )
         model_infos.add(
             _ProviderModelInfo(
                 model_id=model_id,
                 supports_thinking="reasoning" in supported_parameter_names,
+                supports_vision=supports_vision,
             )
         )
 

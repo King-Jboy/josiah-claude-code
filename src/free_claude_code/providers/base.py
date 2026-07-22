@@ -53,6 +53,15 @@ class BaseProvider(ABC):
     ) -> None:
         """Validate the upstream request before opening an SSE stream."""
 
+    def supports_vision_for(self, model_id: str) -> bool | None:
+        """Return whether ``model_id`` accepts image input (None = unknown).
+
+        Providers that know a model cannot read images override this to return
+        False so the executor can refuse image requests proactively instead of
+        letting the upstream reject them and break the proxy.
+        """
+        return None
+
     def _log_stream_transport_error(
         self,
         tag: str,

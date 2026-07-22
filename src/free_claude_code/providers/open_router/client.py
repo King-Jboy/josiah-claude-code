@@ -51,9 +51,11 @@ class OpenRouterProvider(OpenAIChatProvider):
     async def list_model_infos(self) -> frozenset[ProviderModelInfo]:
         """Advertise OpenRouter tool models with reasoning capability metadata."""
         payload = await self._list_models_payload()
-        return extract_openrouter_tool_model_infos(
+        infos = extract_openrouter_tool_model_infos(
             payload, provider_name=self._provider_name
         )
+        self._remember_model_vision(infos)
+        return infos
 
     async def _list_models_payload(self) -> Any:
         return await self._admission.run_with_retry(

@@ -3,7 +3,7 @@
 import asyncio
 import sys
 import uuid
-from collections.abc import AsyncIterator, Awaitable, Callable, Iterator, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Iterable, Iterator, Mapping
 from typing import Any
 
 import httpx
@@ -11,6 +11,7 @@ from loguru import logger
 from openai import AsyncOpenAI
 
 from free_claude_code.application.model_metadata import ProviderModelInfo
+from free_claude_code.application.vision_guard import model_name_suggests_vision
 from free_claude_code.core.anthropic import (
     ContentType,
     HeuristicToolParser,
@@ -95,6 +96,7 @@ class OpenAIChatProvider(BaseProvider):
         # Learned per-model output-token caps from upstream 400 rejections, so
         # later requests clamp proactively instead of paying the 400 each time.
         self._model_output_caps: dict[str, int] = {}
+        self._vision_by_model: dict[str, bool] = {}
         self._admission = admission
         self._key_pool = key_pool
         http_client = None
@@ -148,7 +150,28 @@ class OpenAIChatProvider(BaseProvider):
             self._client.models.list,
             provider_failure_override=self._provider_failure_override,
         )
-        return extract_openai_model_infos(payload, provider_name=self._provider_name)
+        infos = extract_openai_model_infos(payload, provider_name=self._provider_name)
+        self._remember_model_vision(infos)
+        return infos
+
+    def _remember_model_vision(self, infos: Iterable[ProviderModelInfo]) -> None:
+        """Cache per-model vision capability learned from a model-list refresh."""
+        for info in infos:
+            if info.supports_vision is not None:
+                self._vision_by_model[info.model_id] = info.supports_vision
+
+    def supports_vision_for(self, model_id: str) -> bool | None:
+        """Vision capability for a model: a cached fact, else a name heuristic.
+
+        Only returns False when the provider *knows* the model cannot read images
+        (e.g. OpenRouter advertises a text-only modality). Unknown models return
+        None so the executor relies on the reactive image-rejection guard rather
+        than proactively blocking a model that might accept images.
+        """
+        cached = self._vision_by_model.get(model_id)
+        if cached is not None:
+            return cached
+        return True if model_name_suggests_vision(model_id) else None
 
     def _build_request_body(
         self,

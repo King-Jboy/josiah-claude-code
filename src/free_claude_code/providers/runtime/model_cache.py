@@ -56,6 +56,15 @@ class ProviderModelCache:
             return None
         return info.supports_thinking
 
+    def cached_model_supports_vision(
+        self, provider_id: str, model_id: str
+    ) -> bool | None:
+        """Return cached vision support when a provider exposes it."""
+        info = self._model_infos_by_provider.get(provider_id, {}).get(model_id)
+        if info is None:
+            return None
+        return info.supports_vision
+
     def cached_prefixed_model_infos(self) -> tuple[ProviderModelInfo, ...]:
         """Return cached provider models with user-selectable prefixed ids."""
         infos: list[ProviderModelInfo] = []
@@ -65,6 +74,7 @@ class ProviderModelCache:
                 ProviderModelInfo(
                     model_id=f"{provider_id}/{info.model_id}",
                     supports_thinking=info.supports_thinking,
+                    supports_vision=info.supports_vision,
                 )
                 for info in sorted(
                     provider_infos.values(), key=lambda item: item.model_id

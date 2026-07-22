@@ -21,6 +21,11 @@ from free_claude_code.core.trace import (
 
 from .ports import ProviderResolver
 from .routing import RoutedMessagesRequest
+from .vision_guard import (
+    build_image_refusal_sse,
+    looks_like_image_rejection,
+    request_has_image_content,
+)
 
 TokenCounter = Callable[
     [list[Message], str | list[SystemContent] | None, list[Tool] | None],
@@ -107,7 +112,25 @@ class ProviderExecutor:
         )
 
         async def provider_body() -> AsyncIterator[str]:
+            has_images = request_has_image_content(routed.request)
+            # Proactive: a model we *know* cannot read images gets a friendly
+            # refusal instead of a wasted upstream call that would only fail.
+            vision_check = getattr(provider, "supports_vision_for", None)
+            if (
+                has_images
+                and vision_check is not None
+                and vision_check(routed.resolved.provider_model) is False
+            ):
+                logger.info(
+                    "Refusing image for non-vision model {}",
+                    routed.resolved.provider_model,
+                )
+                for event in build_image_refusal_sse(routed.request):
+                    yield event
+                return
+
             provider_stream: AsyncIterator[str] | None = None
+            emitted = False
             try:
                 provider_stream = provider.stream_response(
                     routed.request,
@@ -116,7 +139,21 @@ class ProviderExecutor:
                     reasoning=routed.reasoning,
                 )
                 async for chunk in provider_stream:
+                    emitted = True
                     yield chunk
+            except Exception as error:
+                # Reactive safety net: a brand-new model may not be in any
+                # capability list yet. If the upstream rejected the request
+                # because of an image, answer gracefully instead of breaking.
+                if has_images and not emitted and looks_like_image_rejection(error):
+                    logger.info(
+                        "Image rejected by model {}; sending friendly refusal",
+                        routed.resolved.provider_model,
+                    )
+                    for event in build_image_refusal_sse(routed.request):
+                        yield event
+                    return
+                raise
             finally:
                 if provider_stream is not None:
                     await close_stream_input(
