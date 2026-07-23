@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     open_router_api_keys: str = Field(
         default="", validation_alias="OPENROUTER_API_KEYS"
     )
+    open_router_rpm_per_key: int | None = Field(
+        default=None, validation_alias="OPENROUTER_RPM_PER_KEY"
+    )
     open_router_rpm_per_key: int = Field(
         default=20, validation_alias="OPENROUTER_RPM_PER_KEY"
     )

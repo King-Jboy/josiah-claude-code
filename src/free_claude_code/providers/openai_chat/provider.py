@@ -194,6 +194,11 @@ class OpenAIChatProvider(BaseProvider):
         reasoning: ReasoningPolicy = DEFAULT_REASONING_POLICY,
     ) -> None:
         """Validate OpenAI-chat request conversion before streaming."""
+        try:
+            creds = self._api_key_provider.get_credentials()
+            self._client.api_key = creds["key"]
+        except Exception:
+            pass
         self._build_request_body(request, reasoning=reasoning)
 
     def _handle_extra_reasoning(
