@@ -154,6 +154,14 @@ def _is_rate_limited(error: BaseException) -> bool:
         or getattr(error, "status_code", None) == 429
     )
 
+def _is_overloaded(error: BaseException) -> bool:
+    """Return whether an upstream error is a 5xx / overload / capacity error."""
+    from free_claude_code.providers.failure_policy import is_transient_overload_error
+    return (
+        is_transient_overload_error(error)
+        or getattr(error, "status_code", None) in (502, 503, 529)
+    )
+
 
 class KeyPoolExhaustedError(RuntimeError):
     """Raised when every key in a pool is unavailable for a full lap.
@@ -407,12 +415,16 @@ class KeyPool:
             )
             try:
                 return await create_fn()
-            except Exception as error:  # non-429 errors are re-raised below
-                if not _is_rate_limited(error):
+            except Exception as error:
+                if _is_rate_limited(error):
+                    last_error = error
+                    consecutive_429 += 1
+                    self._enter_cooldown(slot)
+                elif _is_overloaded(error):
+                    last_error = error
+                    self._enter_cooldown(slot)
+                else:
                     raise
-                last_error = error
-                consecutive_429 += 1
-                self._enter_cooldown(slot)
             finally:
                 self._current_key.reset(token)
 
