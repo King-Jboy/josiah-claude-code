@@ -155,7 +155,7 @@ async function load() {
   state.config = data;
   state.fields.clear();
   state.modelOptions = data.model_options || [];
-  flattenFields(data.sections);
+  flattenFields(data.fields);
 
   renderNav();
   renderProviders();
@@ -168,11 +168,9 @@ async function load() {
   updateProviderCount();
 }
 
-function flattenFields(sections) {
-  if (!sections) return;
-  sections.forEach((section) => {
-    (section.fields || []).forEach((field) => state.fields.set(field.key, field));
-  });
+function flattenFields(fields) {
+  if (!fields) return;
+  fields.forEach((field) => state.fields.set(field.key, field));
 }
 
 async function validate(verbose = true) {
