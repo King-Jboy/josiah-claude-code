@@ -27,40 +27,38 @@ Open `http://127.0.0.1:8082/admin` (the port is printed at startup) to configure
 
 ## Choose A Provider
 
-Configure a supported provider:
+| Provider | Type | Example model ref |
+|---|---|---|
+| [NVIDIA NIM](https://build.nvidia.com/settings/api-keys) | cloud, vision | `nvidia_nim/meta/llama-3.1-8b-instruct` |
+| [OpenRouter](https://openrouter.ai/keys) | cloud, vision, reasoning | `open_router/meta-llama/llama-3.1-8b-instruct` |
+| [AWS Bedrock](https://aws.amazon.com/bedrock/) | cloud | `bedrock/anthropic.claude-v2` |
+| [Google Vertex](https://cloud.google.com/vertex-ai) | cloud | `vertex/claude-3-sonnet` |
+| [GitHub Models](https://github.com/marketplace/models) | cloud | `github_models/gpt-4o` |
+| [Groq](https://groq.com) | cloud | `groq/llama3-8b-8192` |
+| [DeepSeek](https://platform.deepseek.com/api_keys) | cloud | `deepseek/deepseek-chat` |
+| [Mistral](https://console.mistral.ai) | cloud | `mistral/mistral-small-latest` |
+| [Mistral Codestral](https://console.mistral.ai) | cloud | `mistral_codestral/codestral-latest` |
+| [Cohere](https://dashboard.cohere.com/api-keys) | cloud | `cohere/command-r-plus` |
+| [Fireworks](https://fireworks.ai) | cloud | `fireworks/accounts/fireworks/models/llama-v3p1-8b` |
+| [Gemini](https://aistudio.google.com/apikey) | cloud, vision | `gemini/gemini-2.0-flash-exp` |
+| [Cerebras](https://cloud.cerebras.ai) | cloud | `cerebras/llama3.1-8b` |
+| [Cloudflare](https://cloudflare.com) | cloud | `cloudflare/@cf/meta/llama-3.1-8b-instruct` |
+| [SambaNova](https://sambanova.ai) | cloud | `sambanova/Meta-Llama-3.1-8B-Instruct` |
+| [Hugging Face](https://huggingface.co/inference-api) | cloud | `huggingface/meta-llama/Meta-Llama-3.1-8B-Instruct` |
+| [Vercel](https://vercel.com) | cloud | `vercel/meta-llama/Meta-Llama-3.1-8B-Instruct` |
+| [Kimi](https://kimi.moonshot.cn) | cloud | `kimi/kimi-v1` |
+| [Kimi Code](https://kimi.moonshot.cn) | cloud | `kimi_code/kimi-v1` |
+| [ZAI](https://zai.ai) | cloud | `zai/gpt-4o-mini` |
+| [MiniMax](https://minimax.io) | cloud | `minimax/MiniMax-Text-01` |
+| [LM Studio](https://lmstudio.ai) | local | `lmstudio/local-model` |
+| [Ollama](https://ollama.com) | local, vision | `ollama/llama3.2` |
+| [Ollama Cloud](https://ollama.com) | cloud | `ollama_cloud/llama3.2` |
+| [llama.cpp](https://github.com/ggerganov/llama.cpp) | local | `llamacpp/local-model` |
+| [OpenCode](https://opencode.ai) | cloud | `opencode/gpt-4o` |
+| [OpenCode Go](https://opencode.ai) | cloud | `opencode_go/gpt-4o` |
+| [Wafer](https://wafer.ai) | cloud | `wafer/llama-3.1-8b` |
 
-| Provider | Type | How to configure | Example model ref |
-|---|---|---|---|
-| [NVIDIA NIM](https://build.nvidia.com/settings/api-keys) | cloud, vision | `NVIDIA_NIM_API_KEY` | `nvidia_nim/meta/llama-3.1-8b-instruct` |
-| [OpenRouter](https://openrouter.ai/keys) | cloud, vision, reasoning | `OPENROUTER_API_KEY` | `open_router/meta-llama/llama-3.1-8b-instruct` |
-| [AWS Bedrock](https://aws.amazon.com/bedrock/) | cloud | `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` | `bedrock/anthropic.claude-v2` |
-| [Google Vertex](https://cloud.google.com/vertex-ai) | cloud | `GOOGLE_APPLICATION_CREDENTIALS` | `vertex/claude-3-sonnet` |
-| [GitHub Models](https://github.com/marketplace/models) | cloud | `GITHUB_TOKEN` | `github_models/gpt-4o` |
-| [Groq](https://groq.com) | cloud | `GROQ_API_KEY` | `groq/llama3-8b-8192` |
-| [DeepSeek](https://platform.deepseek.com/api_keys) | cloud | `DEEPSEEK_API_KEY` | `deepseek/deepseek-chat` |
-| [Mistral](https://console.mistral.ai) | cloud | `MISTRAL_API_KEY` | `mistral/mistral-small-latest` |
-| [Mistral Codestral](https://console.mistral.ai) | cloud | `MISTRAL_API_KEY` | `mistral_codestral/codestral-latest` |
-| [Cohere](https://dashboard.cohere.com/api-keys) | cloud | `COHERE_API_KEY` | `cohere/command-r-plus` |
-| [Fireworks](https://fireworks.ai) | cloud | `FIREWORKS_API_KEY` | `fireworks/accounts/fireworks/models/llama-v3p1-8b` |
-| [Gemini](https://aistudio.google.com/apikey) | cloud, vision | `GEMINI_API_KEY` | `gemini/gemini-2.0-flash-exp` |
-| [Cerebras](https://cloud.cerebras.ai) | cloud | `CEREBRAS_API_KEY` | `cerebras/llama3.1-8b` |
-| [Cloudflare](https://cloudflare.com) | cloud | `CLOUDFLARE_API_KEY` | `cloudflare/@cf/meta/llama-3.1-8b-instruct` |
-| [SambaNova](https://sambanova.ai) | cloud | `SAMBANOVA_API_KEY` | `sambanova/Meta-Llama-3.1-8B-Instruct` |
-| [Hugging Face](https://huggingface.co/inference-api) | cloud | `HUGGINGFACE_API_KEY` | `huggingface/meta-llama/Meta-Llama-3.1-8B-Instruct` |
-| [Vercel](https://vercel.com) | cloud | `VERCEL_API_KEY` | `vercel/meta-llama/Meta-Llama-3.1-8B-Instruct` |
-| [Kimi](https://kimi.moonshot.cn) | cloud | `KIMI_API_KEY` | `kimi/kimi-v1` |
-| [Kimi Code](https://kimi.moonshot.cn) | cloud | `KIMI_API_KEY` | `kimi_code/kimi-v1` |
-| [ZAI](https://zai.ai) | cloud | `ZAI_API_KEY` | `zai/gpt-4o-mini` |
-| [MiniMax](https://minimax.io) | cloud | `MINIMAX_API_KEY` | `minimax/MiniMax-Text-01` |
-| [LM Studio](https://lmstudio.ai) | local | `http://127.0.0.1:1234/v1` | `lmstudio/local-model` |
-| [Ollama](https://ollama.com) | local | `http://127.0.0.1:11434/v1` | `ollama/llama3.2` |
-| [Ollama Cloud](https://ollama.com) | cloud | `OLLAMA_API_KEY` | `ollama_cloud/llama3.2` |
-| [llama.cpp](https://github.com/ggerganov/llama.cpp) | local | `http://127.0.0.1:8080/v1` | `llamacpp/local-model` |
-| [OpenCode](https://opencode.ai) | cloud | `OPENCODE_API_KEY` | `opencode/gpt-4o` |
-| [OpenCode Go](https://opencode.ai) | cloud | `OPENCODE_API_KEY` | `opencode_go/gpt-4o` |
-| [Wafer](https://wafer.ai) | cloud | `WAFER_API_KEY` | `wafer/llama-3.1-8b` |
-
-Provider-specific configuration (model aliases, reasoning defaults, tool schemas) is done through the Admin UI.
+Each provider is configured via its corresponding environment variable (e.g. `NVIDIA_NIM_API_KEY` for NVIDIA NIM, `OPENROUTER_API_KEY` for OpenRouter). Provider-specific configuration (model aliases, reasoning defaults, tool schemas) is done through the Admin UI.
 
 ## Key Pool
 
@@ -79,15 +77,14 @@ For multi-provider pools or keys with limits, use the `--key-pool` flag:
 fcc-server --key-pool 'nvidia_nim:key1@ratelimit:10@concurrency:3,openrouter:key2@concurrency:5'
 ```
 
-When a key reaches its rate limit or concurrency cap, the pool transparently switches to the next available key. If all keys are exhausted, the request is queued until a slot opens.
-
-Enabling a key pool also enables HTTP/2 multiplexing — concurrent requests to the same upstream host share one TCP+TLS connection instead of opening new ones per request. (Without a key pool or SOCKS proxy, HTTP/2 is not used.)
-
-A per-key rate limit can be set via:
+When a key reaches its rate limit or concurrency cap, the pool transparently switches to the next available key. A per-key rate limit can be set via:
 
 ```bash
 export NVIDIA_NIM_RPM_PER_KEY=40
+export OPENROUTER_RPM_PER_KEY=40
 ```
+
+Enabling a key pool also enables HTTP/2 multiplexing — concurrent requests to the same upstream host share one TCP+TLS connection instead of opening new ones per request. (Without a key pool or SOCKS proxy, HTTP/2 is not used.)
 
 ## Image / Vision Support
 
